@@ -1,0 +1,1 @@
+"""AI Staffing Assistant package."""

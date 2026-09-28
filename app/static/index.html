@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Staffing Assistant | Intelligent Resource Matching</title>
+  <meta name="description" content="AI Staffing Assistant powered by Conversational LLMs and TypeSafe Jev System One Decision Engine with calibrated confidence and burnout safety.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/app.css">
+</head>
+<body class="dark-theme">
+  <!-- Top Navigation Bar -->
+  <header class="navbar" id="mainNavbar">
+    <div class="nav-left">
+      <div class="logo-mark">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="m4.93 4.93 4.24 4.24M14.83 9.17l4.24-4.24M14.83 14.83l4.24 4.24M9.17 14.83l-4.24 4.24"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>AI Staffing Assistant</h1>
+        <span class="brand-badge">System One Powered</span>
+      </div>
+    </div>
+
+    <!-- Active Tab Switcher -->
+    <div class="nav-tabs" role="tablist">
+      <button class="nav-tab active" id="tabChatBtn" onclick="switchTab('chat')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Staffing Chat
+      </button>
+      <button class="nav-tab" id="tabDashboardBtn" onclick="switchTab('dashboard')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Resource Dashboard
+      </button>
+    </div>
+
+    <!-- Right Controls: Role Switcher & Theme -->
+    <div class="nav-right">
+      <div class="role-selector">
+        <label for="userRoleSelect">Role:</label>
+        <select id="userRoleSelect" onchange="onRoleChange()">
+          <option value="manager" selected>PM / Manager (Full Access)</option>
+          <option value="recruiter">Recruiter (Cost Hidden)</option>
+        </select>
+      </div>
+      <button class="theme-toggle-btn" id="themeToggleBtn" onclick="toggleTheme()" title="Toggle Light/Dark Theme">
+        <span id="themeIcon">☀️</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main View Container -->
+  <main class="main-container">
+    <!-- View 1: Chatbot Widget -->
+    <section id="chatSection" class="view-section active">
+      <div class="chat-layout">
+        <!-- Chat Stream Panel -->
+        <div class="chat-card">
+          <div class="chat-header">
+            <div class="agent-avatar">
+              <span>🤖</span>
+            </div>
+            <div class="agent-info">
+              <h3>Orchestrator Assistant</h3>
+              <p id="agentStatusText">Ready • Type your staffing requirements</p>
+            </div>
+            <button class="btn-clear" onclick="clearChat()" title="Start New Conversation">Reset Chat</button>
+          </div>
+
+          <div class="messages-viewport" id="messagesViewport">
+            <!-- Messages rendered dynamically -->
+          </div>
+
+          <!-- Suggestion Chips Bar -->
+          <div class="chips-container" id="chipsContainer">
+            <span class="chips-label">Suggestions:</span>
+            <div class="chips-list" id="chipsList"></div>
+          </div>
+
+          <!-- Chat Input Form -->
+          <form class="chat-input-bar" id="chatForm" onsubmit="handleSend(event)">
+            <input 
+              type="text" 
+              id="chatInput" 
+              placeholder="e.g. Find me a senior Python developer for a 3-month fintech project starting Oct 1..." 
+              autocomplete="off"
+              required
+            >
+            <button type="submit" id="sendBtn" class="send-button">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- View 2: Staffing Dashboard -->
+    <section id="dashboardSection" class="view-section">
+      <div class="dashboard-card">
+        <div class="dashboard-header">
+          <div>
+            <h2>Resource Pool & Availability</h2>
+            <p>Real-time view of 300 personnel, skill matrices, and active workload allocations</p>
+          </div>
+          <div class="dashboard-actions">
+            <button class="btn-primary" onclick="loadDashboardResources()">Refresh Data</button>
+          </div>
+        </div>
+
+        <!-- Filter Bar -->
+        <div class="filters-bar">
+          <div class="filter-group">
+            <label>Role</label>
+            <select id="filterRole" onchange="loadDashboardResources()">
+              <option value="">All Roles</option>
+              <option value="Backend Dev">Backend Dev</option>
+              <option value="Frontend Dev">Frontend Dev</option>
+              <option value="Data Engineer">Data Engineer</option>
+              <option value="ML Engineer">ML Engineer</option>
+              <option value="QA">QA</option>
+              <option value="DevOps">DevOps</option>
+              <option value="Designer">Designer</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Seniority</label>
+            <select id="filterSeniority" onchange="loadDashboardResources()">
+              <option value="">All Seniorities</option>
+              <option value="Lead">Lead</option>
+              <option value="Senior">Senior</option>
+              <option value="Mid">Mid</option>
+              <option value="Junior">Junior</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Domain</label>
+            <select id="filterDomain" onchange="loadDashboardResources()">
+              <option value="">All Domains</option>
+              <option value="fintech">Fintech</option>
+              <option value="healthcare">Healthcare</option>
+              <option value="retail">Retail</option>
+              <option value="telecom">Telecom</option>
+              <option value="logistics">Logistics</option>
+              <option value="gaming">Gaming</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label>Min Exp (Yrs)</label>
+            <input type="number" id="filterExp" placeholder="0" min="0" max="25" onchange="loadDashboardResources()">
+          </div>
+        </div>
+
+        <!-- Resource Table -->
+        <div class="table-container">
+          <table class="resource-table" id="resourceTable">
+            <thead>
+              <tr>
+                <th onclick="sortTable('full_name')">Name & ID ↕</th>
+                <th onclick="sortTable('role')">Role ↕</th>
+                <th onclick="sortTable('seniority')">Seniority ↕</th>
+                <th onclick="sortTable('years_experience')">Exp ↕</th>
+                <th>Domain</th>
+                <th>Top Skills</th>
+                <th onclick="sortTable('current_allocation_pct')">Utilization ↕</th>
+                <th id="thHourlyCost" onclick="sortTable('hourly_cost')">Rate ($/hr) ↕</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="resourceTableBody">
+              <tr>
+                <td colspan="9" class="loading-cell">Loading personnel database...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Persistent "Models in Use" Footer & Telemetry Panel -->
+  <footer class="models-footer" id="modelsFooter">
+    <div class="footer-container">
+      <!-- Active Models Info -->
+      <div class="model-item">
+        <div class="model-badge-row">
+          <span class="model-title">Conversational LLM</span>
+          <span class="badge badge-free" id="llmFreeBadge">Free Tier</span>
+        </div>
+        <div class="model-detail" id="llmModelDisplay">Loading...</div>
+      </div>
+
+      <div class="model-item">
+        <div class="model-badge-row">
+          <span class="model-title">Decision Engine</span>
+          <span class="badge" id="jevBadge">TypeSafe Jev</span>
+        </div>
+        <div class="model-detail" id="jevModelDisplay">Loading...</div>
+      </div>
+
+      <!-- Request Telemetry -->
+      <div class="model-item telemetry-item">
+        <span class="model-title">Latest Request Latency</span>
+        <div class="telemetry-values" id="latencyDisplay">
+          <span id="latTotal">0ms</span>
+          <span class="lat-breakdown" id="latBreakdown">Ready</span>
+        </div>
+      </div>
+
+      <div class="model-item telemetry-item">
+        <span class="model-title">Jev Usage & Cost</span>
+        <div class="telemetry-values" id="costDisplay">
+          <span id="jevTokenCount">0 tokens</span>
+          <span class="lat-breakdown" id="jevCostEstimate">$0.000000 est.</span>
+        </div>
+      </div>
+
+      <!-- Billing & Docs Modal Trigger -->
+      <div class="model-item billing-trigger-item">
+        <button class="btn-billing" onclick="openBillingModal()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
+          Billing & API Keys
+        </button>
+        <button class="btn-billing" onclick="openAiLogsModal()" style="margin-left: 6px;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+          AI Call Logs
+        </button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Billing & API Keys Modal -->
+  <div class="modal-backdrop" id="billingModal" onclick="closeBillingModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Billing, API Keys & Gateway References</h3>
+        <button class="modal-close" onclick="closeBillingModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">
+          TypeSafe AI's Jev is a System One decision model billed at <strong>$0.042 per million input tokens</strong> (output tokens are free). Conversational LLM providers use verified free tier tiers.
+        </p>
+        
+        <div class="links-list">
+          <a href="https://console.typesafe.ai" target="_blank" rel="noopener" class="link-card">
+            <div class="link-info">
+              <strong>TypeSafe Console (API keys, usage)</strong>
+              <span>console.typesafe.ai</span>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <a href="https://console.typesafe.ai/settings/keys" target="_blank" rel="noopener" class="link-card">
+            <div class="link-info">
+              <strong>API Key Management</strong>
+              <span>console.typesafe.ai/settings/keys</span>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+
+          <a href="https://vercel.com/ai-gateway" target="_blank" rel="noopener" class="link-card">
+            <div class="link-info">
+              <strong>Vercel AI Gateway (typesafe-ai/jev)</strong>
+              <span>No separate waitlist; billed through Vercel account</span>
+            </div>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        </div>
+
+        <div class="alert-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Note: Pricing and access can change, so users should verify. No direct payment link was verified; add credit/billing through the console or your Vercel account.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Score Breakdown Modal -->
+  <div class="modal-backdrop" id="scoreModal" onclick="closeScoreModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="scoreModalTitle">Score Breakdown</h3>
+        <button class="modal-close" onclick="closeScoreModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="scoreModalBody">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  <!-- AI Call Logs Modal -->
+  <div class="modal-backdrop" id="aiLogsModal" onclick="closeAiLogsModal(event)">
+    <div class="modal-box modal-box-large" onclick="event.stopPropagation()" style="max-width: 860px; width: 90vw;">
+      <div class="modal-header">
+        <div>
+          <h3>AI Call Telemetry & Logs</h3>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Saved to <code>logs/ai_calls.log</code> &amp; individual JSON files in <code>logs/calls/</code></span>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn-billing" onclick="loadAiCallLogs()" style="padding: 4px 10px; font-size: 0.8rem;">Refresh</button>
+          <button class="modal-close" onclick="closeAiLogsModal()">&times;</button>
+        </div>
+      </div>
+      <div class="modal-body" id="aiLogsModalBody" style="max-height: 70vh; overflow-y: auto;">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
